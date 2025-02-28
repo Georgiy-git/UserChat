@@ -7,17 +7,30 @@
 #include <optional>
 #include <thread>
 #include <fstream>
-#include <codecvt>
+#include <QString>
+
+#include <QObject>
+#include <QMetaType>
 
 namespace B = boost::asio;
 using tcp = B::ip::tcp;
 using error_code = boost::system::error_code;
 
-class Client {
+class Window;
+
+class Client : public QObject {
+    Q_OBJECT
 
 public:
+    Window* window;
 
-    Client(B::io_context& io_context);
+    Client(B::io_context& io_context, std::string ip_adres);
+
+    //Обработка ошибки
+    void check_error(error_code error, std::size_t bytes);
+
+    //Отправка сообщения на сервер
+    void write(QString message);
 
     //Асинхронное ожидание сообщения
     void async_read();
@@ -25,14 +38,8 @@ public:
     //Чтение с буфера
     void read_from_buffer(const error_code& error, std::size_t bytes);
 
-    //Отправка сообщения на сервер
-    void async_write(std::string message);
-
-    //Обычный ввод
-    void input();
-
-    //Ввод имени
-    void input_name();
+    //Отправка сообщения на сервер асинхронно
+    void async_write(QString message);
 
     //Отправка файла
     void send_file(std::string&& file_name);
@@ -44,5 +51,8 @@ private:
     B::io_context& io_context;
     std::string name;
     bool can_chat = false;
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    std::string ip_adres;
+
+signals:
+    void signal_new_mess(QString message);
 };

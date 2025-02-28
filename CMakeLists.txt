@@ -12,6 +12,8 @@ set(CMAKE_AUTOUIC ON)
 add_executable(User start.cpp
     authorization.hpp authorization.cpp
     window.hpp window.cpp window.ui
+    images_sources.qrc
+    sqlite3.h
 )
 
 include_directories(${Boost_INCLUDE_DIRS})
@@ -20,4 +22,4 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 target_sources(User PUBLIC error_code.cpp client.cpp client.hpp)
 
-target_link_libraries(User Qt::Core Qt::Widgets Qt::Gui ws2_32)
+target_link_libraries(User Qt::Core Qt::Widgets Qt::Gui ws2_32 sqlite_static)
