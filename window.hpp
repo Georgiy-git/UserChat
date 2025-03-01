@@ -22,8 +22,13 @@ public:
     explicit Window(QString name);
     ~Window();
 
+    bool flag_can_chat{true};
+
     std::shared_ptr<boost::asio::io_context> io_context;
     std::shared_ptr<Client> client;
+    std::shared_ptr<std::thread> thread;
+
+    static QString def2(QString str);
 
 private slots:
     //Выйти
@@ -44,7 +49,6 @@ private:
     Ui::Window *ui;
     QString name; //Имя пользователя
     QLineEdit* line_write; //Линия создания сообщения
-    std::thread* thread;
 
     std::shared_ptr<QVBoxLayout> chat_layout; //Область чата
 
@@ -52,8 +56,6 @@ private:
     std::vector<std::shared_ptr<QLabel>> message_labels;
 
     void write_message(QString &message);
-
-    //void
 };
 
 #endif // WINDOW_HPP

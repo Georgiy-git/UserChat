@@ -5,6 +5,8 @@
 #include <QMessageBox>
 #include <format>
 #include <iostream>
+#include <QKeyEvent>
+#include <string>
 
 Authorization::Authorization()
 {
@@ -77,7 +79,7 @@ Authorization::Authorization()
     layout_button->setAlignment(Qt::AlignHCenter);
     layout_button->setContentsMargins(0, 30, 0, 0);
     layout_button->addWidget(button_accept.get());
-    connect(button_accept.get(), &QPushButton::clicked, this, &Authorization::accept);
+    connect(button_accept.get(), &QPushButton::clicked, this, &Authorization::accept_button);
 
 
     //Добавление в виджет
@@ -105,7 +107,36 @@ Authorization::Authorization()
         memory_button->setCheckState(Qt::Checked);
     }
 
-    if (ok) { QMessageBox::critical(nullptr, " ", "Ошибка Базы Данных.");}
+    if (ok) { QMessageBox::critical(nullptr, " ", "Ошибка Базы Данных ");}
+}
+
+QString Authorization::def(QString str)
+{
+    QChar v[] {'&', '<', '>', ' ', '|', '@', '!', '\"', '\'', '%', '#', '$', '^', '?', '\\',
+              '+', '=', '-', '(', ')', '*', ',', '/', '~'};
+
+    if (str.isEmpty()) {
+        QMessageBox::information(nullptr, " ", "Поля не должны быть пустыми  ");
+        throw "empty";
+    }
+
+    for (QChar& i : v) {
+        if (str.contains(i)) {
+            QMessageBox::information(nullptr, " ", "Использованы неразрешённые символы  ");
+            throw "simvols";
+        }
+    }
+
+    return str;
+}
+
+QString Authorization::def1(QString str)
+{
+    if (str.size() < 4) {
+        QMessageBox::information(nullptr, " ", "В поле меньше 4 символов  ");
+        throw "litle";
+    }
+    return str;
 }
 
 int Authorization::callback(void *data, int argc, char **argv, char **azColName)
@@ -123,34 +154,43 @@ int Authorization::callback(void *data, int argc, char **argv, char **azColName)
     return 0;
 }
 
-void Authorization::accept()
+void Authorization::accept_button()
 {
+    try{ //Нач
+
     if (memory_button->checkState() == Qt::Checked) {
         memory();
     } else {
         sqlite3_exec(db, "DELETE FROM info;", nullptr, nullptr, nullptr);
     }
 
-    name = login_edit->text().trimmed();
-    QString ip = ip_edit->text().trimmed();
+    name = def1(def(login_edit->text().trimmed()));
+    QString password = def1(def(password_edit->text().trimmed()));
+    QString ip = def(ip_edit->text().trimmed());
     std::string ip_ = ip.toUtf8().constData();
 
-    io_context = std::make_shared<B::io_context>();
-    client = std::make_shared<Client>(*io_context, ip_);
-    client->write(name); //Устанавливаю имя клиента
+    try
+    {
+        if (client == nullptr)
+        {
+            io_context = std::make_shared<B::io_context>();
+            client = std::make_shared<Client>(*io_context, ip_);
 
-    Window *window = new Window(name);
-    client->window = window;
+            connect(client.get(), &Client::signal_server_ok, this, server_ok);
+            connect(client.get(), &Client::signal_server_off, this, server_off);
 
-    //Передаю указатели для продления жизни
-    window->io_context = io_context;
-    window->client = client;
+            thread = std::make_shared<std::thread>
+                    ([this] { client->async_read(); io_context->run(); });
 
-    connect(client.get(), &Client::signal_new_mess, window, Window::new_message);
+            client->write("&ENTER&"+name+'|'+password);
+        }
+        else {
+            client->write("&ENTER&"+name+'|'+password);
+        }
+    } catch (...) {}
 
-    window->show();
-    sqlite3_close(db);
-    delete this;
+    } //Кон
+    catch (...) {}
 }
 
 void Authorization::memory()
@@ -170,5 +210,38 @@ void Authorization::memory()
     ok=sqlite3_exec(db, sql.c_str(),
                     nullptr, nullptr, nullptr);
 
-    if (ok) { QMessageBox::critical(nullptr, " ", "Ошибка Базы Данных.");}
+    if (ok) { QMessageBox::critical(nullptr, " ", "Ошибка Базы Данных ");}
+}
+
+void Authorization::server_ok()
+{
+    Window *window = new Window(name);
+
+    //Передаю указатели для продления жизни
+    window->io_context = io_context;
+    window->client = client;
+    window->thread = thread;
+
+    connect(client.get(), &Client::signal_new_mess, window, Window::new_message);
+    connect(client.get(), &Client::signal_stop, window,
+            [window]{window->flag_can_chat=false;});
+
+    window->show();
+    sqlite3_close(db);
+    delete this;
+}
+
+void Authorization::server_off()
+{
+    password_edit->setText("");
+    password_edit->setPlaceholderText("неправильный пароль");
+}
+
+void Authorization::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Return) {
+        accept_button();
+    }
+    else {
+        QWidget::keyPressEvent(event);
+    }
 }

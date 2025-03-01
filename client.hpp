@@ -17,17 +17,14 @@ using tcp = B::ip::tcp;
 using error_code = boost::system::error_code;
 
 class Window;
+class Authorization;
 
 class Client : public QObject {
     Q_OBJECT
 
 public:
-    Window* window;
 
     Client(B::io_context& io_context, std::string ip_adres);
-
-    //Обработка ошибки
-    void check_error(error_code error, std::size_t bytes);
 
     //Отправка сообщения на сервер
     void write(QString message);
@@ -55,4 +52,7 @@ private:
 
 signals:
     void signal_new_mess(QString message);
+    void signal_server_ok(); //Разрешение на подключение
+    void signal_server_off(); //Отказ
+    void signal_stop(); //Отключение возможность отправлять сообщения
 };

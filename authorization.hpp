@@ -11,12 +11,16 @@
 #include <QHBoxLayout>
 #include "sqlite3.h"
 #include <vector>
+#include <QString>
 
 class Authorization : public QWidget
 {
     Q_OBJECT
 public:
     explicit Authorization();
+
+    static QString def(QString str); //Общая проверка полей
+    static QString def1(QString str); //Проверка на количество символов
 
 private:
     std::unique_ptr<QVBoxLayout> layout;
@@ -35,17 +39,21 @@ private:
     QString name;
     std::shared_ptr<Client> client;
     std::shared_ptr<B::io_context> io_context;
+    std::shared_ptr<std::thread> thread;
     sqlite3 *db;
 
     static int callback(void *data, int argc, char **argv, char **azColName);
     static inline std::vector<QString> callback_result;
 
+    void keyPressEvent(QKeyEvent *event) override;
+
 private slots:
-    void accept();
     void memory(); //Запомнить
 
-signals:
-
+public slots:
+    void server_ok(); //Положительный ответ от сервена на вход
+    void server_off(); //Отрицательный ответ от сервена на вход
+    void accept_button(); //Кнопка вход
 };
 
 #endif // AUTHORIZATION_HPP

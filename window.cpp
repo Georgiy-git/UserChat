@@ -7,6 +7,7 @@
 #include <QScrollBar>
 #include <QTimer>
 #include <QKeyEvent>
+#include <QMessageBox>
 
 Window::Window(QString name) : ui(new Ui::Window), name{name}
 {
@@ -19,14 +20,31 @@ Window::Window(QString name) : ui(new Ui::Window), name{name}
     chat_layout->setAlignment(Qt::AlignTop);
     ui->scrollArea->widget()->setStyleSheet("background-color: white;");
     ui->scrollArea->widget()->setLayout(chat_layout.get());
-
-    thread = new std::thread([this]{ client->async_read(); io_context->run(); });
 }
 
 Window::~Window()
 {
     delete ui;
     thread->detach();
+}
+
+QString Window::def2(QString str)
+{
+    QChar v[] {'&', '<', '>', '|', '\\'};
+
+    if (str.trimmed().isEmpty()) {
+        QMessageBox::information(nullptr, " ", "Сообщение не должно быть пустыми  ");
+        throw "empty";
+    }
+
+    for (QChar& i : v) {
+        if (str.contains(i)) {
+            QMessageBox::information(nullptr, " ", "Использованы неразрешённые символы  ");
+            throw "simvols";
+        }
+    }
+
+    return str;
 }
 
 void Window::on_pushButton_clicked()
@@ -39,6 +57,7 @@ void Window::on_pushButton_2_clicked()
     QString text { ui->lineEdit->text() };
     write_message(text);
     ui->lineEdit->setText("");
+
 }
 
 void Window::new_message(QString message_)
@@ -49,7 +68,6 @@ void Window::new_message(QString message_)
     QFont font = message->font();
     font.setPointSize(12);
     message->setFont(font);
-    message->setFixedHeight(30);
 
     std::shared_ptr<QVBoxLayout> message_box = std::make_shared<QVBoxLayout>();
     message_box->addWidget(message.get());
@@ -67,7 +85,7 @@ void Window::new_message(QString message_)
 
 void Window::keyPressEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Return) {
+    if (event->key() == Qt::Key_Return ) {
         on_pushButton_2_clicked();
     } else {
         QWidget::keyPressEvent(event);
@@ -76,6 +94,14 @@ void Window::keyPressEvent(QKeyEvent *event)
 
 void Window::write_message(QString &message)
 {
+    try{
+    def2(message);
+
+    if (!flag_can_chat)
+    {
+        message = "Сообщение не отправлено";
+    }
+
     std::shared_ptr<QLabel> message_ = std::make_shared<QLabel>(message);
     message_->setStyleSheet("background-color: blue; color: white; "
                             "border: 1px solid white; border-radius: 6px; padding: 5px; ");
@@ -96,7 +122,12 @@ void Window::write_message(QString &message)
                         ui->scrollArea->verticalScrollBar()->maximum());
         });
 
-    client->write(message);
+    if (flag_can_chat)
+    {
+        client->write(message);
+    }
+
+    } catch(...) {}
 }
 
 void Window::on_pushButton_3_clicked()

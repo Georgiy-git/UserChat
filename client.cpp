@@ -1,14 +1,17 @@
+#include "authorization.hpp"
 #include "window.hpp"
 #include "client.hpp"
 
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QMessageBox>
+#include <QWidget>
 
 Client::Client(B::io_context& io_context, std::string ip_adres) :
     io_context{ io_context }, socket(io_context), ip_adres{ip_adres} {
     auto address = B::ip::make_address_v4(ip_adres, ec);
     if (ec) {
-        //std::wcerr << converter.from_bytes("Ошибка: "); std::cout << ec.message() << std::endl;
+
         std::exit(1);
     }
 
@@ -16,18 +19,13 @@ Client::Client(B::io_context& io_context, std::string ip_adres) :
 
     socket.connect(endpoint, ec);
     if (ec == B::error::connection_refused) {
-        //std::wcout << converter.from_bytes("Сервер не ответил.") << std::endl;
-        std::exit(1);
+        QMessageBox::information(nullptr, " ", "Сервер не ответил   ");
+        throw "сервер не ответил";
     }
     if (ec) {
-        //std::wcerr << converter.from_bytes("Ошибка подключения: "); std::cout << ec.message() << std::endl;
-        std::exit(1);
+        QMessageBox::information(nullptr, " ", "Ошибка подключения");
+        throw "Ошибка подключения";
     }
-}
-
-void Client::check_error(error_code error, std::size_t bytes)
-{
-
 }
 
 void Client::write(QString message)
@@ -49,10 +47,15 @@ void Client::read_from_buffer(const error_code& error, std::size_t bytes)
 {
     if (error) {
         if (error == B::error::eof) {
-            //std::wcerr << converter.from_bytes("Сервер разорвал соединение.") << std::endl;
+            emit signal_new_mess("<snap style='color: blue;'>"
+                            "Сервер разорвал соединение</snap>");
+            emit signal_stop();
         }
         else {
-            //std::wcout << converter.from_bytes("Ошибка: "); std::cout << error.message() << std::endl;
+            //QString str = QString::fromUtf8(error.message().data());
+            emit signal_new_mess("<span style='color: blue;'>"
+                            "На сервере произошёл сбой</snap>");
+            emit signal_stop();
         }
         return;
     }
@@ -61,9 +64,16 @@ void Client::read_from_buffer(const error_code& error, std::size_t bytes)
     std::string line;
     std::getline(input, line, '\f');
 
-    QString message = QString::fromUtf8(line.c_str());
+    qDebug() << line;
 
-    emit signal_new_mess(message);
+    if (line == "&NON_PASSWORD&") {
+        emit signal_server_off();
+    } else if (line == "&OK_PASSWORD&") {
+        emit signal_server_ok();
+    } else {
+        QString message = QString::fromUtf8(line.c_str());
+        emit signal_new_mess(message);
+    }
 
     async_read();
 }
