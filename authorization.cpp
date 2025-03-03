@@ -26,7 +26,8 @@ Authorization::Authorization()
     QFont font1 = login_edit->font();
     font1.setPointSize(12);
     login_edit->setFont(font1);
-    login_edit->setFixedHeight(30);
+    login_edit->setFixedHeight(26);
+    login_edit->setStyleSheet("QLineEdit { border: none; }");
 
 
     //Пароль
@@ -36,7 +37,9 @@ Authorization::Authorization()
     QFont font2 = password_edit->font();
     font2.setPointSize(12);
     password_edit->setFont(font2);
-    password_edit->setFixedHeight(30);
+    password_edit->setFixedHeight(26);
+    password_edit->setStyleSheet("QLineEdit { border: none; }");
+
 
 
     //Ip сервера
@@ -46,7 +49,9 @@ Authorization::Authorization()
     QFont font3 = ip_edit->font();
     font3.setPointSize(12);
     ip_edit->setFont(font2);
-    ip_edit->setFixedHeight(30);
+    ip_edit->setFixedHeight(26);
+    ip_edit->setStyleSheet("QLineEdit { border: none; }");
+
 
 
     //Кнопка запомнить
@@ -176,8 +181,12 @@ void Authorization::accept_button()
             io_context = std::make_shared<B::io_context>();
             client = std::make_shared<Client>(*io_context, ip_);
 
+            window = new Window(name);
+            connect(client.get(), &Client::signal_load_chat, window, Window::load_chat);
             connect(client.get(), &Client::signal_server_ok, this, server_ok);
             connect(client.get(), &Client::signal_server_off, this, server_off);
+            connect(client.get(), &Client::signal_create_chat_ok, window, Window::create_chat);
+            connect(client.get(), &Client::signal_create_chat_off, window, Window::message_box_info);
 
             thread = std::make_shared<std::thread>
                     ([this] { client->async_read(); io_context->run(); });
@@ -215,7 +224,7 @@ void Authorization::memory()
 
 void Authorization::server_ok()
 {
-    Window *window = new Window(name);
+    window->setWindowIcon(QIcon(":/Images/mine.svg"));
 
     //Передаю указатели для продления жизни
     window->io_context = io_context;
@@ -224,7 +233,8 @@ void Authorization::server_ok()
 
     connect(client.get(), &Client::signal_new_mess, window, Window::new_message);
     connect(client.get(), &Client::signal_stop, window,
-            [window]{window->flag_can_chat=false;});
+            [this]{window->flag_can_chat=false;});
+
 
     window->show();
     sqlite3_close(db);

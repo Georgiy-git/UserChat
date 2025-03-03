@@ -13,6 +13,8 @@
 #include <vector>
 #include <QString>
 
+class Window;
+
 class Authorization : public QWidget
 {
     Q_OBJECT
@@ -41,6 +43,7 @@ private:
     std::shared_ptr<B::io_context> io_context;
     std::shared_ptr<std::thread> thread;
     sqlite3 *db;
+    Window *window;
 
     static int callback(void *data, int argc, char **argv, char **azColName);
     static inline std::vector<QString> callback_result;

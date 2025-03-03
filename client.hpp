@@ -23,7 +23,6 @@ class Client : public QObject {
     Q_OBJECT
 
 public:
-
     Client(B::io_context& io_context, std::string ip_adres);
 
     //Отправка сообщения на сервер
@@ -55,4 +54,7 @@ signals:
     void signal_server_ok(); //Разрешение на подключение
     void signal_server_off(); //Отказ
     void signal_stop(); //Отключение возможность отправлять сообщения
+    void signal_load_chat(QString str); //Загрузка чата
+    void signal_create_chat_ok(QString);
+    void signal_create_chat_off(QString);
 };

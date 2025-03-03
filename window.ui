@@ -41,7 +41,19 @@ color: white;</string>
        <widget class="QLabel" name="label_3">
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_5">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="text">
@@ -61,6 +73,72 @@ color: white;</string>
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_8">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+background-color: blue;
+border: none;
+color: white;
+margin: 1px 1px;
+border-radius: 5px;
+        }
+QPushButton:hover {
+background-color: lightblue;
+        }
+QPushButton:pressed {
+background-color: #21618C;
+        }</string>
+        </property>
+        <property name="text">
+         <string>Добавить участника</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_7">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+background-color: blue;
+border: none;
+color: white;
+margin: 1px 1px;
+border-radius: 5px;
+        }
+QPushButton:hover {
+background-color: lightblue;
+        }
+QPushButton:pressed {
+background-color: #21618C;
+        }</string>
+        </property>
+        <property name="text">
+         <string>Глобальный чат</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_4">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+background-color: blue;
+border: none;
+color: white;
+margin: 1px 1px;
+border-radius: 5px;
+        }
+QPushButton:hover {
+background-color: lightblue;
+        }
+QPushButton:pressed {
+background-color: #21618C;
+        }</string>
+        </property>
+        <property name="text">
+         <string>Локальные чаты</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="pushButton_3">
@@ -103,6 +181,100 @@ background-color: #21618C;
         </property>
         <property name="text">
          <string>Выйти</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <property name="sizeConstraint">
+       <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
+      </property>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: green;
+color: white;</string>
+        </property>
+        <property name="text">
+         <string>Локальные чаты</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QScrollArea" name="scrollArea_2">
+        <property name="styleSheet">
+         <string notr="true">border: none;</string>
+        </property>
+        <property name="widgetResizable">
+         <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+        </property>
+        <widget class="QWidget" name="scrollAreaWidgetContents_2">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>0</y>
+           <width>275</width>
+           <height>468</height>
+          </rect>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_5">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+background-color: blue;
+border: none;
+color: white;
+margin: 1px 1px;
+border-radius: 5px;
+        }
+QPushButton:hover {
+background-color: lightblue;
+        }
+QPushButton:pressed {
+background-color: #21618C;
+        }</string>
+        </property>
+        <property name="text">
+         <string>Создать</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_6">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+background-color: blue;
+border: none;
+color: white;
+margin: 1px 1px;
+border-radius: 5px;
+        }
+QPushButton:hover {
+background-color: lightblue;
+        }
+QPushButton:pressed {
+background-color: #21618C;
+        }</string>
+        </property>
+        <property name="text">
+         <string>Удалить</string>
         </property>
        </widget>
       </item>
@@ -172,8 +344,8 @@ color: white;</string>
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>559</width>
-           <height>471</height>
+           <width>273</width>
+           <height>501</height>
           </rect>
          </property>
         </widget>
@@ -265,16 +437,6 @@ background-color: #21618C;
      </layout>
     </item>
    </layout>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>800</width>
-     <height>30</height>
-    </rect>
-   </property>
   </widget>
  </widget>
  <resources/>

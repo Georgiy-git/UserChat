@@ -7,8 +7,11 @@
 #include <boost/asio.hpp>
 #include <QLineEdit>
 #include <QLabel>
+#include <QPushButton>
+#include <list>
 
 class Client;
+class NewChatLine;
 
 namespace Ui {
 class Window;
@@ -23,6 +26,7 @@ public:
     ~Window();
 
     bool flag_can_chat{true};
+    bool flag_del_chat{false};
 
     std::shared_ptr<boost::asio::io_context> io_context;
     std::shared_ptr<Client> client;
@@ -40,22 +44,60 @@ private slots:
     //Очистить чат
     void on_pushButton_3_clicked();
 
+    //Локальные чаты
+    void on_pushButton_4_clicked();
+
+    //Создать чат
+    void on_pushButton_5_clicked();
+
+    //Синхронная отправка сообщения
+    void write_message(QString message);
+
+    //Открыть локальный чат
+    void open_local_chat(QString name);
+
+    //Вернуться в глобальный чат
+    void on_pushButton_7_clicked();
+
+    //Добавить участника чата
+    void on_pushButton_8_clicked();
+
+    //Добавить пользователя в чат
+    void add_user_to_chat(QString user_name, QString chat_name);
+
+    //Удалить чаты
+    void on_pushButton_6_clicked();
+
+    //Слот удаления чата
+    void delete_chat(QString chat, QPushButton *button);
+
 public slots:
     void new_message(QString message_);
 
+    void load_chat(QString chat);
+
     void keyPressEvent(QKeyEvent *event) override;
+
+    //Слот создания чата
+    void create_chat(QString str);
+
+    //Создать сообщение
+    void message_box_info(QString);
 
 private:
     Ui::Window *ui;
     QString name; //Имя пользователя
     QLineEdit* line_write; //Линия создания сообщения
+    bool flag_open_local_chat{true};
+    QString this_local_chat;
 
     std::shared_ptr<QVBoxLayout> chat_layout; //Область чата
+    std::shared_ptr<QVBoxLayout> chats_layout;
+    NewChatLine* new_chat_line = nullptr; //Линия создания чата
 
     std::vector<std::shared_ptr<QVBoxLayout>> message_boxes;
     std::vector<std::shared_ptr<QLabel>> message_labels;
-
-    void write_message(QString &message);
+    std::vector<QPushButton*> chats_buttons;
 };
 
 #endif // WINDOW_HPP

@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QMessageBox>
 #include <QWidget>
+#include <codecvt>
 
 Client::Client(B::io_context& io_context, std::string ip_adres) :
     io_context{ io_context }, socket(io_context), ip_adres{ip_adres} {
@@ -52,7 +53,6 @@ void Client::read_from_buffer(const error_code& error, std::size_t bytes)
             emit signal_stop();
         }
         else {
-            //QString str = QString::fromUtf8(error.message().data());
             emit signal_new_mess("<span style='color: blue;'>"
                             "На сервере произошёл сбой</snap>");
             emit signal_stop();
@@ -68,11 +68,26 @@ void Client::read_from_buffer(const error_code& error, std::size_t bytes)
 
     if (line == "&NON_PASSWORD&") {
         emit signal_server_off();
+
     } else if (line == "&OK_PASSWORD&") {
         emit signal_server_ok();
+
+    } else if (line.starts_with("&LOADCHAT&")) {
+        line.erase(0, line.rfind('&') + 1);
+        emit signal_load_chat(QString::fromUtf8(line.c_str()));
+
+    } else if (line.starts_with("&CHATCREATEOK&")) {
+        line.erase(0, line.rfind('&') + 1);
+        emit signal_create_chat_ok(QString::fromUtf8(line.c_str()));
+
+    } else if (line == "&CHATALREADYCREATED&") {
+        emit signal_create_chat_off("Чат с таким именем уже существует ");
+
+    } else if (line == "&USERNOINDB&") {
+        emit signal_create_chat_off("Пользователь не найден ");
+
     } else {
-        QString message = QString::fromUtf8(line.c_str());
-        emit signal_new_mess(message);
+        emit signal_new_mess(QString::fromUtf8(line.c_str()));
     }
 
     async_read();
@@ -91,7 +106,7 @@ void Client::send_file(std::string&& file_name)
 {
     std::ifstream file(file_name, std::ios::binary);
     if (!file) {
-        //std::wcout << converter.from_bytes("Не удалось открыть файл.") << std::endl;
+
         return;
     }
 }

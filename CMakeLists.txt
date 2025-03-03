@@ -13,7 +13,9 @@ add_executable(ChatUser start.cpp
     authorization.hpp authorization.cpp
     window.hpp window.cpp window.ui
     images_sources.qrc
-    sqlite3.h
+    sqlite3.h sqlite3.c
+    newchatline.hpp newchatline.cpp
+    onlyacceptlineedit.hpp onlyacceptlineedit.cpp
 )
 
 set_target_properties(ChatUser PROPERTIES WIN32_EXECUTABLE ON)
@@ -24,4 +26,4 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 target_sources(ChatUser PUBLIC error_code.cpp client.cpp client.hpp)
 
-target_link_libraries(ChatUser Qt::Core Qt::Widgets Qt::Gui ws2_32 sqlite_static)
+target_link_libraries(ChatUser Qt::Core Qt::Widgets Qt::Gui ws2_32)
