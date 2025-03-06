@@ -187,6 +187,10 @@ void Authorization::accept_button()
             connect(client.get(), &Client::signal_server_off, this, server_off);
             connect(client.get(), &Client::signal_create_chat_ok, window, Window::create_chat);
             connect(client.get(), &Client::signal_create_chat_off, window, Window::message_box_info);
+            connect(client.get(), &Client::signal_in_ban, this, [this]{
+                QMessageBox::information(nullptr, " ", "Профиль заблокирован  ");
+            });
+            connect(client.get(), &Client::signal_ok_load_file, window, Window::new_file);
 
             thread = std::make_shared<std::thread>
                     ([this] { client->async_read(); io_context->run(); });

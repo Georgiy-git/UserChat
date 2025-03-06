@@ -25,14 +25,21 @@ class Client : public QObject {
 public:
     Client(B::io_context& io_context, std::string ip_adres);
 
+    tcp::socket socket;
+    std::string dir;
+
     //Отправка сообщения на сервер
     void write(QString message);
 
     //Асинхронное ожидание сообщения
     void async_read();
 
+    void async_read_file();
+
     //Чтение с буфера
     void read_from_buffer(const error_code& error, std::size_t bytes);
+
+    void read_file_from_buffer(const error_code& error, std::size_t bytes);
 
     //Отправка сообщения на сервер асинхронно
     void async_write(QString message);
@@ -40,14 +47,16 @@ public:
     //Отправка файла
     void send_file(std::string&& file_name);
 
+    void load_me(std::string);
+
 private:
     boost::system::error_code ec;
-    tcp::socket socket;
     B::streambuf streambuf;
     B::io_context& io_context;
     std::string name;
     bool can_chat = false;
     std::string ip_adres;
+    std::ofstream file;
 
 signals:
     void signal_new_mess(QString message);
@@ -57,4 +66,6 @@ signals:
     void signal_load_chat(QString str); //Загрузка чата
     void signal_create_chat_ok(QString);
     void signal_create_chat_off(QString);
+    void signal_in_ban();
+    void signal_ok_load_file(QString);
 };

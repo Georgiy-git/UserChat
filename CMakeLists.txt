@@ -16,14 +16,16 @@ add_executable(ChatUser start.cpp
     sqlite3.h sqlite3.c
     newchatline.hpp newchatline.cpp
     onlyacceptlineedit.hpp onlyacceptlineedit.cpp
+    findfile.hpp findfile.cpp findfile.ui
+    finddir.hpp finddir.cpp finddir.ui
 )
 
 set_target_properties(ChatUser PROPERTIES WIN32_EXECUTABLE ON)
 
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS} ${Qt6Core_INCLUDE_DIRS})
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 target_sources(ChatUser PUBLIC error_code.cpp client.cpp client.hpp)
 
-target_link_libraries(ChatUser Qt::Core Qt::Widgets Qt::Gui ws2_32)
+target_link_libraries(ChatUser Qt6::Core Qt6::Widgets Qt6::Gui ws2_32)

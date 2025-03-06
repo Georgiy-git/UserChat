@@ -12,6 +12,7 @@
 
 class Client;
 class NewChatLine;
+class FindFile;
 
 namespace Ui {
 class Window;
@@ -27,6 +28,8 @@ public:
 
     bool flag_can_chat{true};
     bool flag_del_chat{false};
+    bool flag_can_files{true};
+    bool flag_del_files{false};
 
     std::shared_ptr<boost::asio::io_context> io_context;
     std::shared_ptr<Client> client;
@@ -71,6 +74,15 @@ private slots:
     //Слот удаления чата
     void delete_chat(QString chat, QPushButton *button);
 
+    //Команды
+    void on_pushButton_9_clicked();
+
+    //Файловая система
+    void on_pushButton_10_clicked();
+
+    //Загрузить файл на сервер
+    void on_pushButton_11_clicked();
+
 public slots:
     void new_message(QString message_);
 
@@ -84,20 +96,29 @@ public slots:
     //Создать сообщение
     void message_box_info(QString);
 
+    //Создать кнопу файла
+    void new_file(QString);
+
+    //Выгрузить файл
+    void load_file(QString);
+
 private:
     Ui::Window *ui;
     QString name; //Имя пользователя
     QLineEdit* line_write; //Линия создания сообщения
     bool flag_open_local_chat{true};
     QString this_local_chat;
+    FindFile* ffile {nullptr};
 
     std::shared_ptr<QVBoxLayout> chat_layout; //Область чата
-    std::shared_ptr<QVBoxLayout> chats_layout;
+    std::shared_ptr<QVBoxLayout> chats_layout; //Область локальных чатов
+    std::shared_ptr<QVBoxLayout> files_layout; //Область файлов
     NewChatLine* new_chat_line = nullptr; //Линия создания чата
 
     std::vector<std::shared_ptr<QVBoxLayout>> message_boxes;
     std::vector<std::shared_ptr<QLabel>> message_labels;
     std::vector<QPushButton*> chats_buttons;
+    std::vector<QPushButton*> files_buttons;
 };
 
 #endif // WINDOW_HPP

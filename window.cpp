@@ -4,6 +4,8 @@
 #include "window.hpp"
 #include "ui_window.h"
 #include "onlyacceptlineedit.hpp"
+#include "findfile.hpp"
+#include "finddir.hpp"
 
 #include <thread>
 #include <iostream>
@@ -36,7 +38,18 @@ Window::Window(QString name) : ui(new Ui::Window), name{name}
     ui->pushButton_7->setFixedHeight(0);
     ui->pushButton_8->setFixedHeight(0);
     ui->label_5->setText("");
+
+    ui->verticalLayout_4->setAlignment(Qt::AlignTop);
+
+    ui->label_6->setFixedWidth(0);
+    ui->scrollArea_3->setFixedWidth(0);
+    ui->pushButton_11->setFixedWidth(0);
+    ui->pushButton_12->setFixedWidth(0);
+    files_layout = std::make_shared<QVBoxLayout>();
+    files_layout->setAlignment(Qt::AlignTop);
+    ui->scrollArea_3->widget()->setLayout(files_layout.get());
 }
+
 
 Window::~Window()
 {
@@ -206,6 +219,13 @@ void Window::on_pushButton_4_clicked()
         if (new_chat_line != nullptr) {
             new_chat_line->setFixedWidth(250);
         }
+
+        ui->label_6->setFixedWidth(0);
+        ui->scrollArea_3->setFixedWidth(0);
+        ui->pushButton_11->setFixedWidth(0);
+        ui->pushButton_12->setFixedWidth(0);
+        flag_can_files = true;
+
     } else {
         //При закрытии
         ui->scrollArea_2->setFixedWidth(0);
@@ -259,6 +279,34 @@ void Window::create_chat(QString str)
 void Window::message_box_info(QString mess)
 {
     QMessageBox::information(nullptr, " ", mess);
+}
+
+void Window::new_file(QString str)
+{
+    if (ffile != nullptr) {
+        delete ffile;
+    }
+
+    QPushButton* button = new QPushButton(str);
+    //connect(button, &QPushButton::clicked, this,
+    //        [chat, this, button]{delete_chat(chat, button);});
+    connect(button, &QPushButton::clicked, this, [this, str]{load_file(str);});
+
+    button->setStyleSheet("QPushButton {"
+                              "background-color: green;"
+                              "border: none;"
+                              "color: white;"
+                              "margin: 1px 1px;"
+                              "border-radius: 5px;"
+                              "        }"
+                              "QPushButton:hover {"
+                              "background-color: lightgreen;"
+                              "        }"
+                              "QPushButton:pressed {"
+                              "background-color: #388E3C;"
+                              "        }");
+    files_buttons.push_back(button);
+    files_layout->addWidget(button);
 }
 
 
@@ -349,3 +397,54 @@ void Window::delete_chat(QString chat, QPushButton* button)
     }
 }
 
+
+void Window::on_pushButton_9_clicked()
+{
+    write_message("/help");
+}
+
+
+void Window::on_pushButton_10_clicked()
+{
+    if (flag_can_files) {
+        ui->label_6->setFixedWidth(250);
+        ui->scrollArea_3->setFixedWidth(250);
+        ui->pushButton_11->setFixedWidth(250);
+        ui->pushButton_12->setFixedWidth(250);
+        flag_can_files = false;
+        flag_can_chat = true;
+
+        ui->scrollArea_2->setFixedWidth(0);
+        ui->label_4->setFixedWidth(0);
+        ui->pushButton_5->setFixedWidth(0);
+        ui->pushButton_6->setFixedWidth(0);
+        flag_open_local_chat = true;
+        if (new_chat_line != nullptr) {
+            new_chat_line->setFixedWidth(0);
+        }
+    }
+    else {
+        ui->label_6->setFixedWidth(0);
+        ui->scrollArea_3->setFixedWidth(0);
+        ui->pushButton_11->setFixedWidth(0);
+        ui->pushButton_12->setFixedWidth(0);
+        flag_can_files = true;
+    }
+}
+
+
+void Window::on_pushButton_11_clicked()
+{
+    ffile = new FindFile(this);
+    ffile->client = client;
+    ffile->setWindowTitle("Загрузить файл на сервер");
+    ffile->show();
+}
+
+void Window::load_file(QString str)
+{
+    FindDir *fdir = new FindDir;
+    fdir->client = client;
+    fdir->file = str;
+    fdir->show();
+}
