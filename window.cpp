@@ -14,6 +14,7 @@
 #include <QKeyEvent>
 #include <QMessageBox>
 #include <QDialog>
+#include <chrono>
 
 
 Window::Window(QString name) : ui(new Ui::Window), name{name}
@@ -48,6 +49,11 @@ Window::Window(QString name) : ui(new Ui::Window), name{name}
     files_layout = std::make_shared<QVBoxLayout>();
     files_layout->setAlignment(Qt::AlignTop);
     ui->scrollArea_3->widget()->setLayout(files_layout.get());
+
+    connect(this, signal_1, this, _anim_1);
+    connect(this, signal_2, this, _anim_2);
+    connect(this, signal_3, this, _anim_3);
+    connect(this, signal_4, this, _anim_4);
 }
 
 
@@ -211,27 +217,23 @@ void Window::on_pushButton_4_clicked()
 {
     //При открытии
     if (flag_open_local_chat) {
-        ui->scrollArea_2->setFixedWidth(250);
-        ui->label_4->setFixedWidth(250);
-        ui->pushButton_5->setFixedWidth(250);
-        ui->pushButton_6->setFixedWidth(250);
+        std::thread([this]{ for (int i{}; i<=10; ++i) {emit signal_1();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));};}).detach();
         flag_open_local_chat = false;
         if (new_chat_line != nullptr) {
             new_chat_line->setFixedWidth(250);
         }
 
-        ui->label_6->setFixedWidth(0);
-        ui->scrollArea_3->setFixedWidth(0);
-        ui->pushButton_11->setFixedWidth(0);
-        ui->pushButton_12->setFixedWidth(0);
+        if (ui->label_6->width()>=0) {
+            std::thread([this]{ for (int i{}; i<=10; ++i) {emit signal_4();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));};}).detach();
+        }
         flag_can_files = true;
 
     } else {
         //При закрытии
-        ui->scrollArea_2->setFixedWidth(0);
-        ui->label_4->setFixedWidth(0);
-        ui->pushButton_5->setFixedWidth(0);
-        ui->pushButton_6->setFixedWidth(0);
+        std::thread([this]{ for (int i{}; i<=10; ++i) {emit signal_2();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));};}).detach();
         flag_open_local_chat = true;
         if (new_chat_line != nullptr) {
             new_chat_line->setFixedWidth(0);
@@ -319,10 +321,9 @@ void Window::on_pushButton_7_clicked()
     ui->pushButton_7->setFixedHeight(0);
     ui->pushButton_8->setFixedHeight(0);
 
-    ui->scrollArea_2->setFixedWidth(0);
-    ui->label_4->setFixedWidth(0);
-    ui->pushButton_5->setFixedWidth(0);
-    ui->pushButton_6->setFixedWidth(0);
+    std::thread([this]{ for (int i{}; i<=10; ++i) {emit signal_2();
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));};}).detach();
+
     flag_open_local_chat = true;
     if (new_chat_line != nullptr) {
         new_chat_line->setFixedWidth(0);
@@ -407,27 +408,23 @@ void Window::on_pushButton_9_clicked()
 void Window::on_pushButton_10_clicked()
 {
     if (flag_can_files) {
-        ui->label_6->setFixedWidth(250);
-        ui->scrollArea_3->setFixedWidth(250);
-        ui->pushButton_11->setFixedWidth(250);
-        ui->pushButton_12->setFixedWidth(250);
+        std::thread([this]{ for (int i{}; i<=10; ++i) {emit signal_3();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));};}).detach();
         flag_can_files = false;
         flag_can_chat = true;
 
-        ui->scrollArea_2->setFixedWidth(0);
-        ui->label_4->setFixedWidth(0);
-        ui->pushButton_5->setFixedWidth(0);
-        ui->pushButton_6->setFixedWidth(0);
+        if (ui->scrollArea_2->width()>=0) {
+            std::thread([this]{ for (int i{}; i<=10; ++i) {emit signal_2();
+                std::this_thread::sleep_for(std::chrono::milliseconds(10));};}).detach();
+        }
         flag_open_local_chat = true;
         if (new_chat_line != nullptr) {
             new_chat_line->setFixedWidth(0);
         }
     }
     else {
-        ui->label_6->setFixedWidth(0);
-        ui->scrollArea_3->setFixedWidth(0);
-        ui->pushButton_11->setFixedWidth(0);
-        ui->pushButton_12->setFixedWidth(0);
+        std::thread([this]{ for (int i{}; i<=10; ++i) {emit signal_4();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));};}).detach();
         flag_can_files = true;
     }
 }
@@ -447,4 +444,40 @@ void Window::load_file(QString str)
     fdir->client = client;
     fdir->file = str;
     fdir->show();
+}
+
+void Window::_anim_1()
+{
+    int x = ui->scrollArea_2->width()+25;
+    ui->scrollArea_2->setFixedWidth(x);
+    ui->pushButton_5->setFixedWidth(x);
+    ui->pushButton_6->setFixedWidth(x);
+    ui->label_4->setFixedWidth(x);
+}
+
+void Window::_anim_2()
+{
+    int x = ui->scrollArea_2->width()-25;
+    ui->scrollArea_2->setFixedWidth(x);
+    ui->pushButton_5->setFixedWidth(x);
+    ui->pushButton_6->setFixedWidth(x);
+    ui->label_4->setFixedWidth(x);
+}
+
+void Window::_anim_3()
+{
+    int x = ui->scrollArea_3->width()+25;
+    ui->label_6->setFixedWidth(x);
+    ui->scrollArea_3->setFixedWidth(x);
+    ui->pushButton_11->setFixedWidth(x);
+    ui->pushButton_12->setFixedWidth(x);
+}
+
+void Window::_anim_4()
+{
+    int x = ui->scrollArea_3->width()-25;
+    ui->label_6->setFixedWidth(x);
+    ui->scrollArea_3->setFixedWidth(x);
+    ui->pushButton_11->setFixedWidth(x);
+    ui->pushButton_12->setFixedWidth(x);
 }

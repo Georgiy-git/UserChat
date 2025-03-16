@@ -119,6 +119,26 @@ private:
     std::vector<std::shared_ptr<QLabel>> message_labels;
     std::vector<QPushButton*> chats_buttons;
     std::vector<QPushButton*> files_buttons;
+
+    //Анимации плавного открытия
+
+    //Открытие чатов
+    void _anim_1();
+
+    //Закрытие чатов
+    void _anim_2();
+
+    //Открытие файлов
+    void _anim_3();
+
+    //Закрытие файлов
+    void _anim_4();
+
+signals:
+    void signal_1();
+    void signal_2();
+    void signal_3();
+    void signal_4();
 };
 
 #endif // WINDOW_HPP
