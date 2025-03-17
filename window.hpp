@@ -86,6 +86,8 @@ private slots:
 public slots:
     void new_message(QString message_);
 
+    void my_message(QString message);
+
     void load_chat(QString chat);
 
     void keyPressEvent(QKeyEvent *event) override;

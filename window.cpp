@@ -118,6 +118,29 @@ void Window::new_message(QString message_)
         });
 }
 
+void Window::my_message(QString message)
+{
+    std::shared_ptr<QLabel> message_ = std::make_shared<QLabel>(message);
+    message_->setStyleSheet("background-color: blue; color: white; "
+                            "border: 1px solid white; border-radius: 6px; padding: 5px; ");
+    QFont font = message_->font();
+    font.setPointSize(12);
+    message_->setFont(font);
+
+    std::shared_ptr<QVBoxLayout> message_box = std::make_shared<QVBoxLayout>();
+    message_box->addWidget(message_.get());
+    message_box->setAlignment(Qt::AlignRight);
+    chat_layout->addLayout(message_box.get());
+
+    message_boxes.push_back(message_box);
+    message_labels.push_back(message_);
+
+    QTimer::singleShot(10, [this]() {
+            ui->scrollArea->verticalScrollBar()->setValue(
+                        ui->scrollArea->verticalScrollBar()->maximum());
+        });
+}
+
 void Window::load_chat(QString chat)
 {
     QPushButton* button = new QPushButton(chat);

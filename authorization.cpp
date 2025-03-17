@@ -238,6 +238,7 @@ void Authorization::server_ok()
     connect(client.get(), &Client::signal_new_mess, window, Window::new_message);
     connect(client.get(), &Client::signal_stop, window,
             [this]{window->flag_can_chat=false;});
+    connect(client.get(), &Client::signal_my_mess, window, Window::my_message);
 
 
     window->show();

@@ -73,6 +73,10 @@ void Client::read_from_buffer(const error_code& error, std::size_t bytes)
     } else if (line == "&OK_PASSWORD&") {
         emit signal_server_ok();
 
+    } else if (line.starts_with("&MYMESSAGE&")) {
+        line.erase(0, line.rfind('&') + 1);
+        emit signal_my_mess(QString::fromUtf8(line.c_str()));
+
     } else if (line.starts_with("&LOADCHAT&")) {
         line.erase(0, line.rfind('&') + 1);
         emit signal_load_chat(QString::fromUtf8(line.c_str()));

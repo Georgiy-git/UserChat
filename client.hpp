@@ -68,4 +68,5 @@ signals:
     void signal_create_chat_off(QString);
     void signal_in_ban();
     void signal_ok_load_file(QString);
+    void signal_my_mess(QString);
 };
